@@ -165,7 +165,21 @@ Strings como strings
     a.find("abc") # 2
     a.split("b") # ['  a', 'cd \n ']
 
+Magia com Slices
+-----------------------------
 
+.. code-block:: python
+
+
+    a = "ola python"
+    a[0]    # 'o'
+    a[1]    # 'l'
+    a[-1]   # 'n'
+    a[-2]   # 'o'
+    a[:3]   # 'ola'
+    a[4:]   # 'python'
+    a[:]    # 'ola python'
+    a[::-1] # 'nohtyp alo'
 
 
 .. |ruby| image:: ruby.png
