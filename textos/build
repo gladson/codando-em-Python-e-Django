@@ -1,0 +1,5 @@
+#!/bin/sh
+#rst2pdf presentation.rst -b1 -s slides.style
+
+rst2pdf *.rst -e inkscape -b1 -s slides.style
+#open presentation.pdf

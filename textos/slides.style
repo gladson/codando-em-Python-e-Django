@@ -1,0 +1,64 @@
+{"pageSetup": {
+    "width": "1024px",
+    "height": "768px",
+    "margin-top": "0cm",
+    "margin-bottom": "0cm",
+    "margin-left": "0cm",
+    "margin-right": "0cm",
+    "margin-gutter": "0cm",
+    "spacing-header": "0mm",
+    "spacing-footer": "0mm",
+    "firstTemplate": "coverPage"
+},
+"special":{
+  "fontSize":1  
+},
+"pageTemplates" : {
+    "coverPage": {
+        "frames": [
+            ["0%", "5%", "100%", "50%"]
+        ],
+        "showHeader" : false,
+        "showFooter" : false,
+        "background" : "cover.svg"
+    },    
+    "excusePage": {
+        "frames": [
+            ["15%", "7%", "70%", "70%"]
+        ],
+        "showHeader" : false,
+        "showFooter" : false,
+        "background" : "excuse.svg",
+        "commands": [
+            [ "VALIGN", [ 0, 0 ], [ -1, -1 ], "TOP" ]
+        ] 
+    },    
+    "simplePage": {
+        "frames": [
+            ["15%", "5%", "70%", "70%"]
+        ],
+        "showHeader" : false,
+        "showFooter" : false,
+        "background" : "background.svg",
+        "commands": [
+            [ "VALIGN", [ 0, 0 ], [ -1, -1 ], "TOP" ]
+        ] 
+    },    
+    "longPage": {
+        "frames": [
+            ["0%", "0%", "100%", "100%"]
+        ],
+        "showHeader" : false,
+        "showFooter" : false,
+        "background" : "background.svg"
+    },
+    "imagePage": {
+        "frames": [
+            ["10%", "0%", "100%", "100%"]
+        ],
+        "showHeader" : false,
+        "showFooter" : false,
+        "background" : "background.svg"
+    }    
+}
+}
