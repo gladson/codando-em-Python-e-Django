@@ -1001,8 +1001,12 @@ Opções na definição do ``Model`` (cont.)
 Atenção
 ---------
 
-no admin, apenas o primeiro criério de ordenação defindo em ``Meta.ordering`` é usado
-fonte:  http://docs.djangoproject.com/en/dev/ref/models/options/#ordering
+no admin, apenas o primeiro critério de ordenação defindo em ``Meta.ordering`` é usado
+
+
+.. code-block:: html
+
+    http://docs.djangoproject.com/en/dev/ref/models/options/#ordering
 
 
 
@@ -1035,11 +1039,17 @@ referências
 
 A melhor referência para views genéricas ainda é o **Apêndice D** do **Django Book (primeira edição)**: 
 
-http://djangobook.com/en/1.0/appendixD/
+
+.. code-block:: html
+
+    http://djangobook.com/en/1.0/appendixD/
 
 A referência oficial é a mais atualizada mas não tem os exemplos do Django Book, por isso é mais difícil de ler: 
 
-http://docs.djangoproject.com/en/dev/ref/generic-views/
+
+.. code-block:: url
+
+    http://docs.djangoproject.com/en/dev/ref/generic-views/
 
 Localização dos templates
 ---------------------------------
@@ -1058,18 +1068,29 @@ a busca por templates no sistema de arquivos é feita por funções configuradas
 
 por app
 ---------
+
+
+.. code-block:: python
     
-``loaders.app_directories.load_template_source`` 
+    loaders.app_directories.load_template_source 
 
 permite que cada aplicação tenha seu próprio diretório de templates
 
 default
 ---------
 
-as *generic views* por convenção procuram templates em locais como: ``«aplicação»/«modelo»_detail.html``
+as *generic views* por convenção procuram templates em locais como: 
 
 
-assim, a melhor forma de organizar os templates no sistema de arquivos é em diretórios como segue (sim, «aplicação» aparece duas vezes)::
+.. code-block:: python  
+
+    «aplicação»/«modelo»_detail.html
+
+
+assim, a melhor forma de organizar os templates no sistema de arquivos é em diretórios como segue (sim, «aplicação» aparece duas vezes)
+
+
+.. code-block:: python
 
     «projeto»/«aplicação»/«templates»/«aplicação»/*.html 
 
@@ -1107,9 +1128,9 @@ em ``«aplicação»/urls.py`` a análise dos caminhos de URLs continua
         url(r'^livro/(?P<object_id>\d+)/$', list_detail.object_detail, livros_info),
     )
 
-no exemplo acima, a URL ``http://exemplo.com/cat/`` aciona a *view* ``object_list``
+``http://exemplo.com/cat/`` aciona a *view* ``object_list``
 
-no mesmo exemplo, a URL ``http://exemplo.com/cat/livro/3/`` aciona ``object_detail`` 
+``http://exemplo.com/cat/livro/3/`` aciona ``object_detail`` 
 
 Configuração de *views* genéricas
 ------------------------------------------
@@ -1245,65 +1266,129 @@ models.py
             #return '/cat/livro/%s/' % self.id
             return ('catalogo-livro-detalhe', (), {'object_id':self.id})
 
-*Views* genéricas incluídas com o Django (1)
+*Views* genéricas incluídas com o Django
 -----------------------------------------------
 
-as *generic views* ficam todas no pacote ``django.views.generic``, ou seja, o nome completo da primeira mencionada abaixo é ``django.views.generic.list_detail.object_list``
+todas são submodulos de 
 
-*generic views* para listagem/detalhe (acabamos de ver)
+.. code-block:: python
 
-    - ``list_detail.object_list``
+    django.views.generic
 
-    - ``list_detail.object_detail``
+por exemplo
+
+.. code-block:: python
+
+    django.views.generic.simple.redirect_to
+
+Simples
+----------------------------------------------
+
+.. code-block:: python
+
+    simple.direct_to_template
+    simple.redirect_to
+
+
+Exemplo
+-------
+
+.. code-block:: python  
+
+    from django.views.generic.simple import direct_to_template 
+    from django.views.generic.simple import redirect_to 
+    from django.conf.urls.defaults import *
+
+    urlpatterns = patterns('',                                                                                                                                  
+      (r'^$', direct_to_template, {'template': "home/index.html"}),
+      (r'^cadastro/$',redirect_to, {'url':'usuario/novo/'}),
+    )
     
-*generic views* “simples”
+listagem/detalhe
+----------------------------------------------
 
-    - ``simple.direct_to_template``
+.. code-block:: python
+
+    list_detail.object_list
+    list_detail.object_detail
     
-    - ``simple.redirect_to``
+Exemplo
+----------------------------------------------
+
+
+.. code-block:: python
+
+    from django.views.generic.list_detail import object_detail
+
+    foos = {'queryset':Foo.objects.order_by('nome'),"paginate_by":50}
+    foos_slug = dict(foos, slug_field='slug')
+    ...
+
+    (r'^$','django.views.generic.list_detail.object_list', foos),
+    (r'^foo/(?P<object_id>\d+)/$',object_detail,foos),
+    (r'^foo/(?P<slug>[-\w]+)/$',object_detail,foos_slug),
+
     
-*generic views* para criar/alterar/deletar objetos
+criar/alterar/deletar objetos
+----------------------------------------------
 
-    - ``create_update.create_object``
-    
-    - ``create_update.update_object``
-    
-    - ``create_update.delete_object``
+.. code-block:: python
 
-*Views* genéricas incluídas com o Django (2)
------------------------------------------------
+    create_update.create_object
+    create_update.update_object
+    create_update.delete_object
 
-estas *generic views* também ficam no pacote ``django.views.generic``
 
-*generic views* para navegar por arquivos cronológicos
-    
-    - ``date_based.archive_index``
+navegar por arquivos cronológicos
+---------------------------------
 
-    - ``date_based.archive_year``
+.. code-block:: python
 
-    - ``date_based.archive_month``
-
-    - ``date_based.archive_week``
-
-    - ``date_based.archive_day``
-
-    - ``date_based.archive_today``
-
-    - ``date_based.object_detail``
+    date_based.archive_index
+    date_based.archive_year
+    date_based.archive_month
+    date_based.archive_week
+    date_based.archive_day
+    date_based.archive_today
+    date_based.object_detail
 
 Principais funções para configuração de URLs
 ---------------------------------------------
 
 Usadas em ``urls.py``:
 
-patterns(prefixo, url1, url2, ...)
-----------------------------------
+urls patterns
+--------------
+
+.. code-block:: python
+
+    patterns(prefixo, url1, url2, ...)
 
 Define uma sequência de padrões de URLs. O prefixo serve para abreviar as referências às views em forma de strings, sendo pre-pendado a todas as views do conjunto. Não tem utilidade quando se usa referências diretas às views.
 
 Os demais argumentos são chamadas de ``url``, ou tuplas formadas por item na ordem exata dos parâmetros da função ``url`` (ver abaixo).
 
 Sequências de padrões de URLs podem ser concatenadas.
+
+
+Exemplo
+-------
+
+.. code-block:: python  
+
+    from django.conf.urls.defaults import *
+    from django.views.generic.simple import direct_to_template 
+    
+    from pizza import settings
+
+    urlpatterns = patterns('',                                                                                                                                  
+      (r'^$', direct_to_template, {'template': "home/index.html"}),
+    )
+    if settings.DEBUG:
+        urlpatterns += patterns('',                                                                                                                                  
+            (r'deb/^$', direct_to_template, {'template': "debug.html"}),
+        )
+    
 
 url(regex, ref_view, extra_dict=None, name='')
 --------------------------------------------------
@@ -1321,7 +1406,506 @@ Define um padrão de URL vinculado a uma view. Os parâmetros são:
         
     ``name``
         Nome da view, para referência reversa.
-  
+
+Enquanto isso no template
+--------------------------
+
+Os templates de django por padrao tem a terminação ``html`` e existem dois tipos de marcadores de tags
+
+``{% ALGO %}`` que executam coisas
+
+``{{ ALGO }}`` que imprimem o resultado
+
+Existem dois tipos de funções que podem ser chamadas nos templates
+
+Filtros e Templatetags
+-----------------------
+
+Parecem python, mas não sao exatamente.
+
+Metodos não tem () por exemplo
+
+.. code-block:: html
+
+    {% foo.bar %}
+
+ele na verdade tenta
+
+.. code-block:: python
+
+    foo.bar()
+    foo[bar]
+
+
+Blocos
+-------
+
+São a forma do django conseguir heranca com templates
+
+``base.html``
+
+.. code-block:: html
+
+    <html>
+        <head>
+            <title>{% block title %}Minha pizzaria{%endblock%}</title>
+        </head>
+        <body>
+            {% block content %}
+            {% endblock %}
+        </body>
+    </html>
+
+no seu template
+----------------
+
+.. code-block:: html
+
+    {% extends "base.html" %}
+
+    {% block content %}
+        <h1>pizzas para {{cliente.nome}}</h1>
+    {% endblock %}
+
+renderiza
+----------
+.. code-block:: html
+
+    <html>
+        <head>
+            <title>Minha pizzaria</title>
+        </head>
+        <body>
+            <h1>pizzas para Fulano</h1>
+        </body>
+    </html>
+
+
+
+
+Template tags
+-----------------
+
+Ver na documentação do django
+
+
+.. code-block:: python
+
+    {{csrf_token}}
+    #protecao contra XSS
+
+    {%cycle "claro" "escuro"%}
+
+    {% firstof var1 var2 "padrao" %}
+
+
+For
+-----
+
+.. code-block:: python
+
+
+    {% for livro in livros %}
+        {{ livro.nome }}<br/>
+    {% empty %}
+        Alguem queimou os livros
+    {% endfor %}
+
+For(2)
+----------------------------------------------
+
+Dentro de um loop você ganha variaveis novas
+
+
+.. code-block:: python
+
+    forloop.counter # contador base 1	
+    forloop.counter0 # contador base 0
+    forloop.revcounter # quantas interacoes faltam base 0
+    forloop.revcounter0 # base 0
+    forloop.first # booleano se é o primeiro
+    forloop.last # booleano se é o último
+    forloop.parentloop # o loop pai para nested loops
+
+Exemplo
+-----------------------------------------------
+
+
+.. code-block:: html
+
+
+    {% for livro in livros %}
+        {% if forloop.first %}
+            <table>
+        {% endif %}
+        <tr><td>{{forloop.count}}</td><td>{{ livro.nome }}</td></tr>
+        {% if forloop.last %}
+            </table>
+        {% endif %}
+    {% empty %}
+        <p>Alguem queimou os livros</p>
+    {% endfor %}
+
+Exemplo
+-----------------------------------------------
+
+
+.. code-block:: html
+
+    <table>
+        <tr><td>1</td><td>Foo o livro</td></tr>
+        <tr><td>2</td><td>A volta de Foo</td></tr>
+        <tr><td>3</td><td>O Foo e eu</td></tr>
+    </table>
+
+ou 
+
+.. code-block:: html
+
+    <p>Alguem queimou os livros</p>
+
+
+if
+------
+
+Mudou no 1.2 e agora suporta Operadores booleanos complexos
+
+
+.. code-block:: python
+
+    == operator
+    != operator
+    < operator
+    > operator
+    <= operator
+    >= operator
+    (not) in operator 
+
+Exemplo
+----------------------------------------------
+
+
+.. code-block:: html
+
+   {% if a == b or c == d and e %}
+
+é equivalente em python a 
+
+.. code-block:: python
+
+    if (a == b) or ((c == d) and e)
+
+django < 1.1
+------------------------------------------------
+
+usa 
+
+.. code-block:: html
+
+    {% ifequal username "adriano"}
+        sou eu
+    {% endifequal%}
+    {% ifnotequal username "adriano"}
+        voce nao tem o meu username
+    {% endifnotequal %}
+
+
+Template tags cont.
+----------------------------------------------
+
+.. code-block:: html
+
+    {% include "foo.html" %}
+
+    # comparar com 
+
+    {% ssi /home/html/ljworld.com/includes/right_generic.html %}
+
+    {% now "jS F Y H:i" %} #usa a sintaxe do PHP
+
+    {{ url myapp:view-name }} 
+
+
+Filtros
+------------------------------------------------
+
+Filtros modificam a saida de uma variavel ver:
+
+.. code-block:: url
+
+    http://docs.djangoproject.com/en/dev/ref/templates/builtins/
+
+por exemplo
+    
+
+.. code-block:: html
+
+   {{ foo.dt|date:"Y/m/d" }}
+    
+
+.. code-block:: html
+
+    2010/09/25
+    
+
+Mais do que voce queria saber sobre Queries
+---------------------------------------------
+
+Fazendo ``OR``, usa o operador Q
+
+.. code-block:: python
+    
+    from django.db.models import Q
+
+    Foo.objects.filter( Q(nome="joe")|Q(nome="ze") )
+    # WHERE nome = 'joe' OR nome = 'ze'
+
+    Foo.objects.filter( Q(nome="joe"), 
+                    Q(dt="20100101") | Q(dt="20091231"))
+    # WHERE nome = 'joe' AND (dt = '20100101" OR dt="20091231)
+
+CUIDADO
+--------
+
+Mas não pode misturar com os filtros normais
+
+.. code-block:: python
+    
+
+    #ERRADO ERRADO ERRADO
+    Foo.objects.filter( nome="joe", 
+                    Q(dt="20100101") | Q(dt="20091231"))
+    # ERRADO ERRADO ERRADO
+
+Um erro comum
+---------------
+
+.. code-block:: python
+
+    #ERRADO ERRADO ERRADO
+    Foo.objects.filter(nome!="joe")
+    #ERRADO ERRADO ERRADO
+
+
+    #Certo
+    Foo.objects.exclude(nome="joe")
+
+Views não genéricas
+----------------------------------------------
+
+Uma view no django e' tudo que recebe um request e devolve uma response
+
+Sao mapeadas pelas urls.py
+
+Exemplo mais simples
+----------------------------------------------
+
+urls.py
+
+.. code-block:: python
+    
+    (r'^$', "pizza.entrega.views.index"),
+
+views.py
+
+.. code-block:: python
+
+    from django.http import HttpResponse
+
+    def index(request):
+        return HttpResponse("home") 
+
+Usando templates em views
+------------------------------------------------
+
+Facilitador render_to_response
+
+.. code-block:: python
+
+    from django.shortcuts import render_to_response
+
+    def index(request):
+        return render_to_response("home.html", {} )
+
+Pegando parametros
+-------------------
+
+3 formas:
+
+na url
+
+GET
+
+POST
+
+na url
+-------------------------------------------------
+
+urls.py
+
+.. code-block:: python
+
+    (r'^foo/(?P<object_id>\d+)/$',show_foo),
+
+views.py
+
+.. code-block:: python  
+    
+    def show_foo(request, object_id):
+        pass
+
+POST GET
+---------            
+
+``/?pagina=5``
+
+.. code-block:: python
+
+    def index(request):
+        # existe tambem o request.POST e request.REQUEST         
+        pagina = request.GET.get("pagina", 1)
+        return render_to_response("home.html", {"pagina":pagina} )
+
+Testando se teve POST
+-----------------------
+
+
+.. code-block:: python
+    
+    if request.POST:
+        pass
+
+    # ou
+
+    if request.method == 'POST':
+        pass
+
+
+Mais facilitadores
+-------------------
+
+
+.. code-block:: python  
+    
+    from django.shortcuts import get_object_or_404
+    from pizza.entrega.models import Cliente
+
+    def show_cliente(request, object_id):
+        cliente = get_object_or_404(Cliente, id=object_id)
+        ...
+
+
+Forms
+------
+
+.. code-block:: python
+
+    from django import forms
+
+    class SearchForm(forms.Form):
+        q = forms.CharField()
+        dt = forms.DateField()
+    
+    def listar(request):
+        form = SearchForm()
+        if request.POST:
+            form = SearchForm(request.POST)
+            if form.is_valid():
+                q = form.cleaned_data["q"]
+                # faz algo com q
+        return render_to_response('avulso.html', {'form':form})
+
+No template
+-----------
+
+.. code-block:: html
+
+   <form method="post" action=".">
+   <table>
+    {{form}}
+   </table>
+   </form>
+
+Model form
+-----------
+
+
+.. code-block:: python
+
+    from django.http import HttpResponseRedirect
+    from django import forms
+
+    class ClienteForm(forms.ModelForm):
+        class Meta:
+            model = Cliente
+
+    def criar(request):
+        form = ClienteForm()
+        if request.POST:
+            form = ClienteForm(request.POST)
+            if form.is_valid():
+                cliente = form.save()
+                return HttpResponseRedirect("/show/%s/"% cliente.id)
+        return render_to_response('avulso.html', {'form':form})
+
+Mais facilitadores ainda
+------------------------
+
+Decoradores
+
+
+.. code-block:: python
+
+    from django.contrib.auth.decorators import login_required
+
+    @login_required
+    def foo(request):
+        pass
+
+Pre-requisitos
+--------------
+
+se nao logado ele redireciona para 
+
+
+.. code-block:: python
+
+    settings.LOGIN_URL # por padrao /accounts/login/
+
+e voce precisa ter essa url ou usar a do contrib.
+Incluir essa linha no urls.py
+
+
+.. code-block:: python
+
+    (r'^accounts/login/$', 'django.contrib.auth.views.log
+
+Form de login
+--------------
+
+criar um template em registration/login.html
+
+
+.. code-block:: html
+
+    {% extends "base.html" %}
+    {% block content %}
+    {% if form.errors %}
+    <p>Senha ou Usuario incorretos, tente novamente</p>
+    {% endif %}
+    <form method="post" action="{% url django.contrib.auth.views.login %}">
+    {% csrf_token %}
+    <table>
+        <tr><td>{{ form.username.label_tag }}</td>
+        <td>{{ form.username }}</td></tr>
+        <tr><td>{{ form.password.label_tag }}</td>
+        <td>{{ form.password }}</td></tr>
+    </table>
+    <input type="submit" value="login" />
+    <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+    {% endblock %}
+
 Glossário
 ----------
 
