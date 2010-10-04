@@ -30,7 +30,6 @@ A criação dinamica de um ``PROJECT_PATH`` facilita a execução em multiplos a
 .. code-block:: python 
 
     import os
-    import sys
 
     PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
     ...
@@ -118,7 +117,7 @@ base_site.html
 
 .. code-block:: html
 
-    {% extends "admin/base_index.html" %}
+    {% extends "admin/base.html" %}
  
     {% block title %}{{ title }} | Admin da pizzaria {% endblock %}
  
@@ -136,7 +135,7 @@ Applicações para conhecer
 --------------------------------------
 
 ``django-config``
-Gerencia varias configuracoes 
+Gerencia varias configurações 
 
 ``django-debug-toolbar``
 Fantastico!
@@ -153,11 +152,103 @@ Controle de tarefas assincronamente
 ``fabric``
 Deploy e gerenciamento remoto
 
-``gnucorn``
+``gunicorn``
 Servidor WSGI 
 
 ``varnish``
 Solucao para cache
+
+
+debugando
+----------
+
+usando o pdb
+
+.. code-block:: python
+
+    import pdb; pdb.set_trace()
+
+alguns comandos
+----------------
+
+
+.. code-block:: python
+
+    w(here)
+    c(ont)
+    n(ext)
+    s(tep)
+    l(ist)
+    a(rgs)
+    b(reak)
+    p(rint)
+    u(p)
+
+
+.. AP para testes
+   import nose
+   nose.tools.set_trace()
+
+
+Stand alone scripts
+--------------------
+
+
+.. code-block:: python
+
+    #!/usr/bin/python
+    #coding:utf8
+
+    # local onde esta o settings
+    SETTINGS_PATH = "/home/aluno/pizza"
+    import sys, os
+    sys.path.append(SETTINGS_PATH)
+
+    from django.core.management import setup_environ
+    import settings
+    setup_environ(settings)
+
+    # a partir daqui coisas como  
+    # from pizza.entrega.models import Cliente funciona
+    # funcionam
+
+
+
+virutalenv
+-----------
+
+Permite que voce use diversas versões de pacotes na mesma maquina
+
+Criando
+-----------
+
+.. code-block:: bash
+
+    virtualenv --no-site-packages ambiente
+
+Ativação
+----------
+
+.. code-block:: bash
+
+    source ambiente/bin/activate
+
+para desativar
+
+.. code-block:: bash
+
+    deactivate
+
+
+Instalar pacotes
+-----------------
+
+Atenção sem o sudo
+
+.. code-block:: bash
+
+    pip install django
+
 
  
 
@@ -194,7 +285,7 @@ usando
     >>> foo.tipo
     'decorada'
 
-funcoes dentro de funcoes
+funções dentro de funções
 --------------------------
 
 
@@ -278,22 +369,160 @@ decoradores como Classes
 Decoradores importantes
 ------------------------
 
+metodos de classe
+------------------
 
 .. code-block:: python
 
-    # do python
-    @staticmethod
-    @property
+    Foo.bar("larari")
 
-    #do django
+
+
+``@staticmethod``
+------------------
+
+.. code-block:: python
+
+    class Foo(object):
+        @staticmethod
+        def bar(cls, valor):
+            print valor
+
+    >>> Foo.bar("larari")
+    larari
+
+
+Propriedades
+-------------
+
+
+.. code-block:: python
+
+    >>> f = Foo()
+    >>> f.bar
+    'algo'
+
+``@property``
+------------------
+
+.. code-block:: python
+
+    class Foo(object):
+        @property
+        def bar(self):
+            return "algo"
+
+
+Cuidado
+------------
+
+
+.. code-block:: python
+
+    >>> f.bar = 123
+    AttributeError: can't set attribute
+
+getters e setters
+------------------
+
+Não precisa para atributos simples como:
+
+.. code-block:: python
+
+    class Foo():
+        dia = 11
+    >>> f = Foo()
+    >>> f.dia
+    11
+    >>> f.dia = 12
+    >>> f.dia
+    12
+
+Para atributos complexos
+-------------------------
+
+
+.. code-block:: python
+
+    from datetime import datetime
+
+    class Foo(object):
+        data = datetime.now()
+
+        def get_dia(self):
+            return self.data.day
+
+        def set_dia(self, dia):
+            self.data = self.data.replace(day=dia)
+            
+        dia = property(get_dia,set_dia)
+
+Uso
+-----
+
+
+.. code-block:: python
+
+    f = Foo()
+    f.data
+    datetime.datetime(2009, 6, 20, 13, 44, 22, 463668)
+    f.dia
+    20
+    f.dia = 21
+    f.dia
+    21
+    f.data
+    datetime.datetime(2009, 6, 21, 13, 44, 22, 463668)
+
+
+
+do django
+----------
+
+.. code-block:: python
+
+    from django.contrib.auth.decorators 
+                            import login_required
+
     @login_required
-    def my_view(request):
+    def foo(request):
         ...
 
 
+Permissões para usar o admin
+-----------------------------
+
+
 .. code-block:: python
 
-    from django.contrib.auth.decorators import login_required
+    from django.contrib.admin.views.decorators 
+                        import staff_member_required
+    
+    @staff_member_required
+    def foo(request):
+        ...
+
+
+permisso permisso
+-------------------
+
+Usuario logado e o resto?
+
+No admin
+
+.. code-block:: python
+
+    can_delete_entrega
+
+na view
+
+.. code-block:: python
+
+
+    if request.user.has_perm('aluno.delete_entrega'):
+        pass
+
+
 
 
 Signals
@@ -422,7 +651,7 @@ cache
 
     CACHE_BACKEND = 'locmem://'
 
-    CACHE_BACKEND = 'dummy://' # NAO CACHEIA so pra testes
+    CACHE_BACKEND = 'dummy://' # NAO CACHEIA
 
 middlewares
 ------------
@@ -549,7 +778,7 @@ Mais metodos
     cache.get_many([chave1,chave2,chave3])
     cache.delete_many([chave1,chave2,chave3])
     
-cache para contadores
+Cache para contadores
 ----------------------
 
 
@@ -563,7 +792,7 @@ cache para contadores
     cache.decr("contador")
 
 
-cache entre o django e o browser
+Cache entre o django e o browser
 --------------------------------
 
 
@@ -575,7 +804,7 @@ cache entre o django e o browser
     def foo(request):
         ...
 
-cookies
+Cookies
 --------
 
 
@@ -604,6 +833,7 @@ ou forca cache
 
 .. code-block:: python
 
+
     from django.views.decorators.cache import cache_control
 
     @cache_control(must_revalidate=True, max_age=3600)
@@ -623,40 +853,488 @@ sem cache
 
 
 
+Gerando feeds
+--------------
 
-
-permisso permisso
--------------------
+urls.py
 
 
 .. code-block:: python
 
-    if request.user.has_perm('aluno.delete_entrega'):
-        pass
+    from foo.bar.views import BlogFeed, AtomBlogFeed
+    from django.contrib.syndication.views import feed
+
+    feeds = {
+        'rss': BlogFeed,
+        'atom': AtomBlogFeed,
+    }
+
+    ...
+    (r'^feeds/(?P<url>.*)/$', 'feed', {'feed_dict': feeds}),
+    ...
+
+views
+------
 
 
-virutalenv
------------
+.. code-block:: python
 
+    from django.contrib.syndication.feeds import Feed
+    from django.utils.feedgenerator import Atom1Feed
+
+    class BlogFeed(Feed):
+        title = "Foo"
+        link = "/"
+        def items(self):
+            return Post.get_open()[:10]
+
+
+    class AtomBlogFeed(BlogFeed):
+        feed_type = Atom1Feed
+        subtitle = BlogFeed.description
+        author_name="me"
+    
+Extra fields
+-------------
+
+.. code-block:: python
+
+    def item_link(self, item):
+        return "/post/%s"% item.slug
+
+    def item_pubdate(self, item):
+        return item.published_at
+
+    def item_author_name(self, item):
+        return item.author
+
+Dicas
+------
+
+sempre valida o feed
+
+atom é mais chato
+
+Custom everything
+------------------
+
+``models fields``
+
+``form fields``
+
+``widgets``
+
+``template tags``
+
+``template filters``
+
+
+custom model fields
+--------------------
+
+antes de mais nada leia a documentação
+
+.. code-block:: python
+
+    class TrueCharField(models.Field):
+        def db_type(self, connection):
+            return 'char(100)'
+
+    class ModeloBatuta(models.Model):
+        fixo = TrueCharField()
+
+Coisas a observar
+-------------------
+
+``__metaclass__ = models.SubfieldBase``
+
+Para tipos costumizados de objetos python
+
+``db_type``
+
+Da o formato em SQL básico
+
+``to_python``
+
+Formata do formado to SQL para python
+
+``get_prep_value``
+
+Formata o contrario de python pra SQL
+
+exemplo complexo
+----------------
+
+
+.. code-block:: python
+
+    class MesAnoField(models.DateField):
+        __metaclass__ = models.SubfieldBase
+
+
+.. code-block:: python
+
+    def value_to_string(self, obj):
+        return self._get_val_from_obj(obj)
+
+de sql para python
+-------------------
+
+.. code-block:: python
+
+    def to_python(self,value):
+        if not value:
+            return
+        if isinstance(value,str):
+            return value
+        if isinstance(value,unicode):
+            return value
+        return '%s/%s' % (value.month,value.year)
+
+de python para sql
+------------------
+
+.. code-block:: python
+
+    def get_prep_value(self, value):
+        if value:
+            mes,ano = map(int,value.split('/'))
+            return date(ano,mes,1)
+
+custom form fields
+-------------------
+
+Basicamente sobreescrever o clean
+
+
+.. code-block:: python
+
+    class BrFloatField(forms.FloatField):
+        widget = BrFloatWidget # vemos a seguir
+
+        def clean(self,value):
+            value = value.replace(',','.')
+            return super(BrFloatField,self).clean(value)
+
+exemplo prático
+------------------
+
+
+.. code-block:: python
+
+    def clean(self, value):
+        if value in EMPTY_VALUES:
+            return None
+        try:
+            int(value)
+        except (ValueError, TypeError):
+            raise ValidationError(u'Código de Cliente inválido')
+            
+        try:
+            value = Cliente.objects.get(id=value)
+        except self.model.DoesNotExist:
+            raise ValidationError(u'Cliente não existe')
+        return value
+
+custom widgets
+----------------
+
+Quando cresce o numero de clientes fica claro que isso não funciona por culpa do html
+
+.. code-block:: python
+
+    class ClienteForm(forms.Form):
+        cliente = forms.ModelChoiceField(Cliente.objects.all())
+    # FUNCIONA MAS NAO FUNCIONA PARA MUITOS CLIENTES
+
+
+.. code-block:: html
+
+    <select>
+        ...milhares de <option>s
+    </select>
+
+Alternativa
+------------
+
+fazer um widget(representação html do campo) mais apropriado
+
+Simples
+--------
+
+subclasseia uma widget proxima e muda o render
+
+exemplo
+--------
+
+
+.. code-block:: python
+
+    class BrFloatWidget(forms.fields.TextInput):
+      def render(self, name, value, attrs=None):
+        if value:
+            if type(value) is float:            
+                value = '%.2f' % value
+                value = value.replace('.',',')
+        else:
+            value = '0,00'
+           
+        return super(BrFloatWidget,self).render(name, value, attrs)
+
+Só pra lembrar
+--------------
+
+
+.. code-block:: python
+
+    class BrFloatField(forms.FloatField):
+        widget = BrFloatWidget # <-----
+
+        def clean(self,value):
+            value = value.replace(',','.')
+            return super(BrFloatField,self).clean(value)
+
+widgets mais complexos
+-----------------------
+
+class Media
+
+.. code-block:: python
+
+    class OneToManySearchInput(forms.SelectMultiple):
+        class Media:
+            css = {
+                'all': ('/static/jquery.autocomplete.css',)
+            }
+            js = (
+                '/static/jquery.bgiframe.min.js',
+                '/static/jquery.ajaxQueue.js',
+                '/static/jquery.autocomplete.js'
+            )
+
+no template
+------------
+
+
+.. code-block:: html
+
+    {{ form.media }}
+    <form>
+        {{ form }}
+    </form>
+
+e usar marksafe
+------------------
+
+
+.. code-block:: python
+
+    def render(self, name, value, attrs=None):
+        return mark_safe(u"""
+            <script>........
+        """)
+
+Custom template tags e filters
+-------------------------------
 
 .. code-block:: bash
 
-    Criar um ambiente virtual limpo:
-    $ virtualenv --no-site-packages ambiente
+    mkdir entrega/templatetags
+    cd entrega/templatetags
 
-    Ativar o ambiente virtual:
-    $ source ambiente/bin/activate
-
-    Instalar django:
-    $ pip install django
-
-    Sair do ambiente virtual:
-    $ deactivate
+criar um arquivo 
+-----------------
+    
+footags.py
 
 
-import pdb
-pdb.set_trace()
+.. code-block:: python
 
-import nose
-nose.tools.set_trace()
+    from django import template
+
+    register = template.Library()
+    
+    @register.filter
+    def foo(val):
+        return len(val)
+
+no template
+-----------
+
+
+.. code-block:: html
+
+    {% load footags %}
+
+    foo tem tamanho {{ texto_qualquer|foo }}    
+
+Ou mais prático
+----------------
+
+
+.. code-block:: python
+
+    from django.template.defaultfilters import floatformat
+    from django import template
+
+    register = template.Library()
+
+    @register.filter
+    def brfloatformat(value,arg=-1):
+        value = floatformat(value,arg)
+        return value.replace('.',',')
+    brfloatformat.is_safe = True
+
+mark_safe
+----------
+
+se volta algum html que é seguro marca com
+
+
+.. code-block:: python
+    
+    from django.utils.safestring import mark_safe
+
+    @register.filter
+    def foo(val):
+        return mark_safe("<big>%s</big>"% len(val))
+    foo.needs_autoescape = True
+
+custom template tags
+---------------------
+
+
+.. code-block:: html
+
+     agora é {% agora "%Y-%m-%d" %}
+
+tem que criar um parser e um node
+
+parser
+--------
+
+.. code-block:: python
+
+    def agora_parser(parser, token):
+        try:
+            tag_name, format_string = token.split_contents()
+        except ValueError:
+            # nao tem dois parametros
+            raise template.TemplateSyntaxError
+        # nao tem aspas no segundo parametro
+        if not (format_string[0] == format_string[-1] 
+                    and format_string[0] in ('"', "'")):
+            raise template.TemplateSyntaxError
+        return AgoraNode(format_string[1:-1])
+
+Node
+--------------
+
+.. code-block:: python
+
+    class AgoraNode(template.Node):
+        def __init__(self, format_string):
+            self.format_string = format_string
+        def render(self, context):
+            return datetime.datetime.now().strftime(self.format_string)
+
+Registra
+---------
+
+
+.. code-block:: python
+
+    @register.tag(name="agora")
+    def agora_parser(parser, token):
+        ....
+
+agora mais simples
+-------------------
+
+
+.. code-block:: html
+
+   {% lista_comentarios post %}
+
+
+.. code-block:: html
+
+    <dl>
+        <dt>fulano</dt>
+        <dd>maior legal</dd>
+        <dt>ciclano</dt>
+        <dd>não gostei</dd>
+    </dl>
+
+Cria o método
+---------------
+
+
+.. code-block:: python
+
+    def lista_comentarios(post):
+        comments =  post.comentario_set.all()
+        return {"comentarios":comments}
+
+comentarios.html
+-------------------
+
+dentro de algum ``/templates``
+
+.. code-block:: html
+
+    <dl>
+        {% for comment in comentarios %}
+        <dt>{{comment.autor}}</dt>
+        <dd>{{comment.texto}}</dd>
+        {% endfor %}
+    </dl>
+
+dai registra
+-------------
+
+
+.. code-block:: python
+
+    @register.inclusion_tag('comentarios.html')
+    def lista_comentarios(post):
+        comments =  post.comentario_set.all()
+        return {"comentarios":comments}
+
+block tags
+----------
+
+
+.. code-block:: html
+
+    {% mimimi %}O dia foi lindo{% endmimimi %}
+   
+.. code-block:: html
+
+    O dia foi mimimi
+   
+parser e node
+-------------- 
+
+
+.. code-block:: python
+
+    def do_mimimi(parser, token):
+        nodelist = parser.parse(('endmimimi',))
+        parser.delete_first_token()
+        return MimimiNode(nodelist)
+
+node
+----
+
+
+.. code-block:: python
+
+    class MimimiNode(template.Node):
+        def __init__(self, nodelist):
+            self.nodelist = nodelist
+        def render(self, context):
+            output = self.nodelist.render(context)
+            return output.replace("lindo", "mimimi")
+
 
