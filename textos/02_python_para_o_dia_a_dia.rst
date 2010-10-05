@@ -81,7 +81,7 @@ sys e os
 
 Vale um estudo em separado
 
-Dentre os usos, o que eu gosto é manupulações de caminhos
+Dentre os usos, o que eu gosto é manipulações de caminhos
 
 .. code-block:: python
 
@@ -98,10 +98,10 @@ listagem simples de arquivos
 .. code-block:: python
 
     from glob import glob
-    for filename in glob( '.rst' ):
+    for filename in glob( '*.rst' ):
         print filename
 
-
+.. " **
 
 
 Facil de conseguir mais baterias
@@ -224,9 +224,7 @@ usando
     import urllib2
 
     feed = urllib2.urlopen(url).read()
-
     f = feedparser.parse(feed)
-
     for entry in f['entries']:
         print entry['title']
 

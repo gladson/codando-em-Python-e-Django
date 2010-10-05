@@ -81,6 +81,99 @@ Por partes
 
 padrão são 4 espaços, mas voce tem liberdade de escolher desde que seja consistente  
 
+Como chamar programas em  python
+---------------------------------
+
+Crie um arquivo teste.py
+
+.. code-block:: python
+    
+    print "funciona"
+
+Na linha de comando
+
+
+.. code-block:: bash
+
+   $ python teste.py
+   funciona
+
+Importando módulos
+-------------------
+
+Módulos são arquivos. Eles são importados do sys.path
+
+
+.. code-block:: python
+
+    >>> import sys
+    >>> print sys.path
+    ['', '/usr/lib/python2.6', 
+    .... 
+    '/usr/lib/python2.6/dist-packages', 
+    '/usr/local/lib/python2.6/dist-packages']
+
+Criando módulos
+----------------
+
+cria o diretório
+
+.. code-block:: bash
+
+    mkdir queijo
+    gedit queijo/quente.py
+
+cria o módulo
+
+.. code-block:: python
+
+    print "importou queijo quente"
+    def foo(val):
+        print val
+
+importa dentro do python
+--------------------------
+
+.. code-block:: python
+
+    >>> from queijo import quente
+    ImportError: No module named queijo
+
+Módulos são definidos pelo init
+--------------------------------
+
+Para o python entender o diretorio como um modulo ele precisa de um arquivo chamado __init__.py dentro dele
+
+
+
+.. code-block:: bash
+
+   touch queijo/__init__.py
+
+Salva o aquivo vazio
+
+importa dentro do python
+--------------------------
+
+.. code-block:: python
+
+    >>> from queijo import quente
+    importou queijo quente
+
+    >>> quente.foo("ola")
+    ola
+
+ou
+----
+
+
+.. code-block:: python
+
+    >>> from queijo.quente import foo
+
+    >>> foo("ola")
+    ola
+
 Blocos |ruby| |java|
 ----------------------
 
@@ -116,12 +209,11 @@ Funções dentro de funções
 
     def foo():
         print "antes de declarar bar"
-        
         def bar():
             print "dentro do bar"
-        
         print "depois de declarar bar"
         bar()
+
     foo()
 
 saida
@@ -252,7 +344,7 @@ Magia com Slices
 
 
     len(a)  # 10
-    min(a)  # a
+    min(a)  # ' '
     a[1]    # 'l'
     a[-1]   # 'n'
     a[-2]   # 'o'
@@ -354,7 +446,7 @@ Listas são sequencias mutaveis
     a[:2] # ['ola', 2]
     
     for i in a:
-        print 1
+        print i
 
 for .. in ..
 -------------
